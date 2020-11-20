@@ -34,7 +34,9 @@ class DialogActivity : AppCompatActivity() {
         adapter = MessageListAdapter(options)
         adapter.startListening()
 
-        messagesListRV.layoutManager = LinearLayoutManager(this)
+        messagesListRV.layoutManager = LinearLayoutManager(this).apply {
+            stackFromEnd = true
+        }
         messagesListRV.adapter = adapter
     }
 
