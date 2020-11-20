@@ -11,7 +11,7 @@ import com.firebase.ui.database.FirebaseRecyclerOptions
 class MessageListAdapter(options: FirebaseRecyclerOptions<Message>):
     FirebaseRecyclerAdapter<Message, MessageListAdapter.MessageViewHolder>(options){
 
-    lateinit var parentRV: RecyclerView
+    private lateinit var parentRV: RecyclerView
 
     // Inflate view holder with specified layout
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {

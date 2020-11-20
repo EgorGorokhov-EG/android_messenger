@@ -40,11 +40,12 @@
 
         <Button
             android:onClick="sendMessage"
+            android:layout_margin="6dp"
             android:id="@+id/sendMessageBtn"
             android:layout_width="wrap_content"
-            android:layout_height="45dp"
+            android:layout_height="50dp"
             android:layout_gravity="center"
-            android:textSize="15sp"
+            android:textSize="13sp"
             android:text="SEND"
             style="@style/Widget.MaterialComponents.Button"/>
 

@@ -1,22 +1,11 @@
 <resources>
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-    </style>
-
-    <style name="SendBtnTheme" parent="Widget.MaterialComponents.Button">
-        <item name="android:elevation">0dp</item>
-        <item name="android:textColor">@color/colorPrimary</item>
-        <item name="background">@color/transparent</item>
-        <item name="android:textSize">15sp</item>
     </style>
 
     <style name="ChatBoxTheme" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="shapeAppearance">@style/ShapeAppearance.MaterialComponents.MediumComponent</item>
-        <item name="android:textColor">@color/colorOnPrimary</item>
         <item name="android:hint">"Type your message"</item>
     </style>
 </resources>
