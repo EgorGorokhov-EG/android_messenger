@@ -30,8 +30,6 @@ class MessageListAdapter(private val options: FirebaseRecyclerOptions<Message>):
 
     // Inflate view holder with specified layout
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {
-
-
         return if (viewType == MSG_TYPE_SENT) {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.sent_message_layout, parent, false)
             MessageViewHolder(view)

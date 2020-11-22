@@ -22,6 +22,9 @@ class DialogActivity : AppCompatActivity() {
     private val database = Firebase.database.reference
     private val auth = Firebase.auth
 
+    private val currentUserId = auth.currentUser?.uid
+    private val currentUserName = auth.currentUser?.displayName
+
     private lateinit var messagesListRV: RecyclerView
     private lateinit var adapter: FirebaseRecyclerAdapter<Message, MessageListAdapter.MessageViewHolder>
 
@@ -70,14 +73,14 @@ class DialogActivity : AppCompatActivity() {
         if (inputMessage.text.isNotEmpty()) {
             val message = Message(
                 messageBody = inputMessage.text.toString(),
-                userId = auth.currentUser?.uid
+                userId = currentUserId,
+                userName = currentUserName
             ).toMap()
 
             // Clear input text field
             inputMessage.setText("")
 
             val key = database.child("messages").push().key
-
             database.updateChildren(mutableMapOf<String, Any>("/messages/$key" to message))
         }
     }
