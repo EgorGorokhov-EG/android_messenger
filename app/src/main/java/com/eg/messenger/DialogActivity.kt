@@ -11,6 +11,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
@@ -65,7 +68,12 @@ class DialogActivity : AppCompatActivity() {
         val inputMessage = findViewById<EditText>(R.id.inputMessage)
 
         if (inputMessage.text.isNotEmpty()) {
-            val message = Message(messageBody = inputMessage.text.toString()).toMap()
+            val message = Message(
+                messageBody = inputMessage.text.toString(),
+                userId = auth.currentUser?.uid
+            ).toMap()
+
+            // Clear input text field
             inputMessage.setText("")
 
             val key = database.child("messages").push().key

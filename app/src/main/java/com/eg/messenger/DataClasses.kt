@@ -1,12 +1,12 @@
 package com.eg.messenger
 
 data class Message(
-    var userId: Int = 0,
-    var userName: String = "",
-    var createdAt: Long = 0,
-    var messageBody: String = "",
+    var userId: String? = "",
+    var userName: String? = "",
+    var createdAt: Long? = 0,
+    var messageBody: String? = "",
 ) {
-    fun toMap(): Map<String, Any> {
+    fun toMap(): Map<String, Any?> {
         return mapOf(
             "userId" to userId,
             "userName" to userName,
@@ -17,11 +17,11 @@ data class Message(
 }
 
 data class User(
-    var userId: Int,
-    var userName: String,
-    var email: String
+    var userId: String?,
+    var userName: String?,
+    var email: String?
 ) {
-    fun toMap(): Map<String, Any> {
+    fun toMap(): Map<String, Any?> {
         return mapOf(
             "userId" to userId,
             "userName" to userName
