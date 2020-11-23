@@ -24,7 +24,8 @@ data class User(
     fun toMap(): Map<String, Any?> {
         return mapOf(
             "userId" to userId,
-            "userName" to userName
+            "userName" to userName,
+            "email" to email
         )
     }
 }

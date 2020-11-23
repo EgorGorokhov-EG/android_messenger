@@ -11,6 +11,7 @@
         android:layout_margin="6dp"
         android:background="@drawable/received_message_box"
         android:padding="8dp"
+        android:maxWidth="@dimen/sizeMessageMaxWidth"
         android:text="Hello it's a me Mario!"
         android:textColor="@color/colorOnPrimary"
         android:textSize="@dimen/sizeMessageText"

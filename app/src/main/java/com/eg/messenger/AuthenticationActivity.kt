@@ -24,6 +24,10 @@ class AuthenticationActivity : AppCompatActivity() {
 
         auth = Firebase.auth
         database = Firebase.database.reference
+
+        if (auth.currentUser != null) {
+            startActivity(Intent(this, DialogActivity::class.java))
+        }
     }
 
     fun signInUser(view: View) {
@@ -45,11 +49,13 @@ class AuthenticationActivity : AppCompatActivity() {
         {
             task ->
                 if (task.isSuccessful) {
-                    startActivity(Intent(this, DialogActivity::class.java))
                     val key = database.child("users").push().key
                     val userId = auth.currentUser?.uid
 
-                    val newUser = User(userId, email, email)
+                    val intent = Intent(this, DialogActivity::class.java)
+                    startActivity(intent)
+
+                    val newUser = User(userId, userName = email, email = email)
                     database.updateChildren(mutableMapOf<String, Any?>("/users/$key" to newUser.toMap()))
                 }
                 else Toast.makeText(this, task.exception.toString(), Toast.LENGTH_LONG).show()
