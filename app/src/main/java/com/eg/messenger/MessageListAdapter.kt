@@ -62,9 +62,11 @@ class MessageListAdapter(private val options: FirebaseRecyclerOptions<Message>):
 
     class MessageViewHolder(view: View): RecyclerView.ViewHolder(view) {
         private val messageBody = view.findViewById<TextView>(R.id.textMessageBody)
+        private val timeMessageSent = view.findViewById<TextView>(R.id.timeMessageSent)
 
         fun bindMessage(message: Message) {
             messageBody.text = message.messageBody
+            timeMessageSent.text = message.createdAt
         }
     }
 }

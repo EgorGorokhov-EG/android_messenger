@@ -29,6 +29,8 @@ class DialogActivity : AppCompatActivity() {
     private lateinit var messagesListRV: RecyclerView
     private lateinit var adapter: FirebaseRecyclerAdapter<Message, MessageListAdapter.MessageViewHolder>
 
+    private val localCalendar = Calendar.getInstance()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dialog)
@@ -66,35 +68,40 @@ class DialogActivity : AppCompatActivity() {
         val inputMessage = findViewById<EditText>(R.id.inputMessage)
 
         if (inputMessage.text.isNotEmpty()) {
+            val createdAtHour = localCalendar.get(Calendar.HOUR)
+            val createdAtMinutes = localCalendar.get(Calendar.MINUTE)
+            val timeAmPm = if (localCalendar.get(Calendar.AM_PM) == 0) "AM" else "PM"
+
             val message = Message(
                 messageBody = inputMessage.text.toString(),
                 userId = currentUserId,
-                userName = currentUserName
+                userName = currentUserName,
+                createdAt = "$createdAtHour:$createdAtMinutes $timeAmPm"
             ).toMap()
 
             // Clear input text field
             inputMessage.setText("")
 
+            // Update messages in the DB
             val key = database.child("messages").push().key
             database.updateChildren(mutableMapOf<String, Any>("/messages/$key" to message))
         }
     }
 
+    // Function to retrieve information about current user from Database
     private fun getCurrentUserFromDB(userId: String?, database: DatabaseReference) {
-        class valueEventListener(): ValueEventListener {
+        class MyValueEventListener(): ValueEventListener {
             override fun onCancelled(error: DatabaseError) {
             }
 
             override fun onDataChange(snapshot: DataSnapshot) {
                 val user = snapshot.children.toList()[0].value as MutableMap<*,*>
                 currentUserName = user["userName"] as String?
-                println(Calendar.getInstance().get(Calendar.HOUR).toString())
             }
         }
 
-        val retrieveUserEventListener = valueEventListener()
+        val retrieveUserEventListener = MyValueEventListener()
         val userQuery = database.child("users").orderByChild("userId").equalTo(userId)
         userQuery.addListenerForSingleValueEvent(retrieveUserEventListener)
-        println(currentUserName)
     }
 }

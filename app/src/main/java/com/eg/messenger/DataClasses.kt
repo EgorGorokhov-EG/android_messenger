@@ -3,7 +3,7 @@ package com.eg.messenger
 data class Message(
     var userId: String? = "",
     var userName: String? = "",
-    var createdAt: Long? = 0,
+    var createdAt: String? = "00:00",
     var messageBody: String? = "",
 ) {
     fun toMap(): Map<String, Any?> {
