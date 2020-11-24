@@ -35,18 +35,17 @@ class DialogActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dialog)
 
-        getCurrentUserFromDB(currentUserId, database)
+        currentUserName = getCurrentUserFromDB(currentUserId, database)
         messagesListRV = findViewById(R.id.messagesRecyclerView)
 
         // Retrieve messages query from DB
         val messageQuery = database.child("messages").limitToLast(50)
         val options = FirebaseRecyclerOptions.
-                                                        Builder<Message>().
-                                                        setQuery(messageQuery, Message::class.java).
-                                                        build()
+                                            Builder<Message>().
+                                            setQuery(messageQuery, Message::class.java).
+                                            build()
 
         adapter = MessageListAdapter(options)
-
         messagesListRV.layoutManager = LinearLayoutManager(this).apply {
             stackFromEnd = true
         }
@@ -86,22 +85,5 @@ class DialogActivity : AppCompatActivity() {
             val key = database.child("messages").push().key
             database.updateChildren(mutableMapOf<String, Any>("/messages/$key" to message))
         }
-    }
-
-    // Function to retrieve information about current user from Database
-    private fun getCurrentUserFromDB(userId: String?, database: DatabaseReference) {
-        class MyValueEventListener(): ValueEventListener {
-            override fun onCancelled(error: DatabaseError) {
-            }
-
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val user = snapshot.children.toList()[0].value as MutableMap<*,*>
-                currentUserName = user["userName"] as String?
-            }
-        }
-
-        val retrieveUserEventListener = MyValueEventListener()
-        val userQuery = database.child("users").orderByChild("userId").equalTo(userId)
-        userQuery.addListenerForSingleValueEvent(retrieveUserEventListener)
     }
 }
