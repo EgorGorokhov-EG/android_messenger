@@ -21,7 +21,7 @@
             android:orientation="vertical">
             
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/dialogUserName"
+                android:id="@+id/chatUserName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="User Name"
@@ -29,7 +29,7 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
 
             <TextView
-                android:id="@+id/dialogLastMessage"
+                android:id="@+id/chatLastMessage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="this is the last message"
@@ -40,7 +40,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/dialogTimeLastMessageSent"
+                android:id="@+id/chatTimeLastMessageSent"
                 android:text="00:00 PM"
                 android:padding="8dp"
                 android:textAppearance="@style/TextAppearance.AppCompat.Small"/>

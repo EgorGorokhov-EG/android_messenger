@@ -10,8 +10,8 @@ import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
-class DialogsListAdapter(options: FirebaseRecyclerOptions<Dialog>):
-    FirebaseRecyclerAdapter<Dialog, DialogsListAdapter.ChatViewHolder>(options) {
+class ChatsListAdapter(options: FirebaseRecyclerOptions<Chat>):
+    FirebaseRecyclerAdapter<Chat, ChatsListAdapter.ChatViewHolder>(options) {
 
     val auth = Firebase.auth
 
@@ -19,26 +19,25 @@ class DialogsListAdapter(options: FirebaseRecyclerOptions<Dialog>):
         parent: ViewGroup,
         viewType: Int
     ): ChatViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.dialog_item_layout, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.chat_item_layout, parent, false)
         return ChatViewHolder(view)
     }
 
     override fun onBindViewHolder(
         holder: ChatViewHolder,
         position: Int,
-        model: Dialog
+        model: Chat
     ) {
         holder.bindDialog(model)
     }
 
     class ChatViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        private val dialogItemUsername = view.findViewById<TextView>(R.id.dialogUserName)
-        val dialogLastMessage = view.findViewById<TextView>(R.id.dialogLastMessage)
-        val dialogTimeLastMessageSent = view.findViewById<TextView>(R.id.dialogTimeLastMessageSent)
+        private val chatItemUsername = view.findViewById<TextView>(R.id.chatUserName)
+        val chatLastMessage = view.findViewById<TextView>(R.id.chatLastMessage)
+        val chatTimeLastMessageSent = view.findViewById<TextView>(R.id.chatTimeLastMessageSent)
 
-        fun bindDialog(dialog: Dialog) {
-            dialogItemUsername.text = dialog.user1
-            println(dialogItemUsername.text)
+        fun bindDialog(dialog: Chat) {
+            chatItemUsername.text = dialog.user1
         }
     }
 

@@ -3,14 +3,12 @@ package com.eg.messenger
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
@@ -26,7 +24,8 @@ class AuthenticationActivity : AppCompatActivity() {
         database = Firebase.database.reference
 
         if (auth.currentUser != null) {
-            startActivity(Intent(this, DialogActivity::class.java))
+            val intent = Intent(this, DisplayChatsActivity::class.java)
+            startActivity(intent)
         }
     }
 
@@ -36,7 +35,7 @@ class AuthenticationActivity : AppCompatActivity() {
 
         auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this)
         { task ->
-            if (task.isSuccessful) startActivity(Intent(this, DialogActivity::class.java))
+            if (task.isSuccessful) startActivity(Intent(this, ChatActivity::class.java))
             else Toast.makeText(this, task.exception.toString(), Toast.LENGTH_LONG).show()
         }
     }
@@ -52,7 +51,7 @@ class AuthenticationActivity : AppCompatActivity() {
                     val key = database.child("users").push().key
                     val userId = auth.currentUser?.uid
 
-                    val intent = Intent(this, DialogActivity::class.java)
+                    val intent = Intent(this, DisplayChatsActivity::class.java)
                     startActivity(intent)
 
                     val newUser = User(userId, userName = email, email = email)

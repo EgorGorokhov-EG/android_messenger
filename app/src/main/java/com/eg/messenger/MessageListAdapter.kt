@@ -17,7 +17,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import kotlinx.android.synthetic.main.activity_dialog.view.*
+import kotlinx.android.synthetic.main.activity_chat.view.*
 
 const val MSG_TYPE_SENT = 0
 const val MSG_TYPE_RECEIVED = 1

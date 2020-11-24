@@ -30,7 +30,7 @@ data class User(
     }
 }
 
-data class Dialog(
+data class Chat(
     var user1: String? = "",
     var user2: String? = "",
     var lastMessage: String? = "",
