@@ -13,13 +13,14 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import java.util.*
 
-class ChatActivity : AppCompatActivity() {
+class ChatActivity : MenuActivity() {
 
     private val database = Firebase.database.reference
     private val auth = Firebase.auth
 
     private val currentUserId = auth.currentUser?.uid
     private var currentUserName: String? = ""
+    private var currentChatId: String? = ""
 
     private lateinit var messagesListRV: RecyclerView
     private lateinit var adapter: FirebaseRecyclerAdapter<Message, MessageListAdapter.MessageViewHolder>
@@ -30,7 +31,7 @@ class ChatActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
 
-        currentUserName = getCurrentUserFromDB(currentUserId, database)
+        //currentUserName = getUserNameFromDB(currentUserId, database)
         messagesListRV = findViewById(R.id.messagesRecyclerView)
 
         // Retrieve messages query from DB

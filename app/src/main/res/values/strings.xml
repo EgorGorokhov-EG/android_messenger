@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Messenger</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="sign_up">Sign up</string>
+    <string name="sign_in">sign in</string>
+    <string name="type_your_message">Type your message</string>
+    <string name="send">SEND</string>
 </resources>

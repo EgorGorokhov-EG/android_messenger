@@ -32,11 +32,12 @@
             android:layout_width="0dp"
             android:layout_weight="7"
             android:layout_height="match_parent"
-            android:hint="Type your message"
+            android:hint="@string/type_your_message"
             android:background="@color/transparent"
-            android:paddingLeft="15dp"
+            android:paddingStart="15dp"
             android:paddingBottom="4dp"
-            android:textSize="17sp"/>
+            android:textSize="17sp"
+            tools:ignore="RtlSymmetry" />
 
         <Button
             android:onClick="sendMessage"
@@ -46,7 +47,7 @@
             android:layout_height="50dp"
             android:layout_gravity="center"
             android:textSize="13sp"
-            android:text="SEND"
+            android:text="@string/send"
             style="@style/Widget.MaterialComponents.Button"/>
 
     </LinearLayout>

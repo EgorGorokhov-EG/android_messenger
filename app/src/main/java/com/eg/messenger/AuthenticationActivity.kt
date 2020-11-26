@@ -27,6 +27,7 @@ class AuthenticationActivity : AppCompatActivity() {
             val intent = Intent(this, DisplayChatsActivity::class.java)
             startActivity(intent)
         }
+        //auth.signOut()
     }
 
     fun signInUser(view: View) {
@@ -35,7 +36,7 @@ class AuthenticationActivity : AppCompatActivity() {
 
         auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this)
         { task ->
-            if (task.isSuccessful) startActivity(Intent(this, ChatActivity::class.java))
+            if (task.isSuccessful) startActivity(Intent(this, DisplayChatsActivity::class.java))
             else Toast.makeText(this, task.exception.toString(), Toast.LENGTH_LONG).show()
         }
     }
@@ -48,14 +49,14 @@ class AuthenticationActivity : AppCompatActivity() {
         {
             task ->
                 if (task.isSuccessful) {
-                    val key = database.child("users").push().key
-                    val userId = auth.currentUser?.uid
+                    val userId = database.child("users").push().key
+                    val authId = auth.currentUser?.uid
+
+                    val newUser = User(authId, userName = email, email = email)
+                    database.updateChildren(mutableMapOf<String, Any?>("/users/$userId" to newUser.toMap()))
 
                     val intent = Intent(this, DisplayChatsActivity::class.java)
                     startActivity(intent)
-
-                    val newUser = User(userId, userName = email, email = email)
-                    database.updateChildren(mutableMapOf<String, Any?>("/users/$key" to newUser.toMap()))
                 }
                 else Toast.makeText(this, task.exception.toString(), Toast.LENGTH_LONG).show()
         }

@@ -2,32 +2,59 @@ package com.eg.messenger
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kotlin.random.Random
 
-class DisplayChatsActivity : AppCompatActivity() {
+class DisplayChatsActivity : MenuActivity() {
     private lateinit var addNewChatFAB: FloatingActionButton
 
     private val database = Firebase.database.reference
     private val auth = Firebase.auth
+    private val currentAuthId = auth.currentUser?.uid
 
-    lateinit var chatsAdapter: ChatsListAdapter
+    private lateinit var chatsAdapter: ChatsListAdapter
 
-    private val currentUserId = auth.currentUser?.uid
+    private var currentUserId: String? = ""
     private var currentUserName: String? = ""
+
+    init {
+        // Retrieve current userID from the DB
+        val getUserIdQuery = database.child("users").orderByChild("authId").equalTo(currentAuthId)
+        getUserIdQuery.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val snapValue = snapshot.value
+                currentUserId = (snapValue as HashMap<*,*>).keys.toList()[0] as String?
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        })
+
+        /*// Retrieve current userName frm the DB
+        println("Before username: $currentUserName")
+        val getUserNameQuery = database.child("users").orderByKey().equalTo(currentUserId)
+        getUserNameQuery.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val user = snapshot.children.toList()
+                println("User: $user")
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        })*/
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_display_chats)
-
-        currentUserName = getCurrentUserFromDB(currentUserId, database)
 
         val chatsQuery = database.child("chats")
         val options = FirebaseRecyclerOptions.Builder<Chat>().setQuery(chatsQuery, Chat::class.java).build()
@@ -41,11 +68,12 @@ class DisplayChatsActivity : AppCompatActivity() {
         }
 
         addNewChatFAB = findViewById(R.id.addNewChatBtn)
-        addNewChatFAB.setOnClickListener { view: View ->
-            val dialogId = database.child("chats").push().key
+        addNewChatFAB.setOnClickListener {
+            val chatId = database.child("chats").push().key
 
-            val newChat = Chat("testUser${Random.nextInt()}", "testUser2").toMap()
-            database.updateChildren(mutableMapOf<String, Any?>("/chats/$dialogId" to newChat))
+            println(currentUserId.toString() + " before chat")
+            val newChat = Chat(mutableMapOf(currentUserId as String to true, "testUser2" to true)).toMap()
+            database.updateChildren(mutableMapOf<String, Any>("/chats/$chatId" to newChat))
         }
     }
 

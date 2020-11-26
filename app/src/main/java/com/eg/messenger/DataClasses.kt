@@ -17,29 +17,29 @@ data class Message(
 }
 
 data class User(
-    var userId: String? = "",
+    var authId: String? = "",
     var userName: String? = "",
-    var email: String? = ""
+    var email: String? = "",
+    var chats: List<String?> = listOf()
 ) {
     fun toMap(): Map<String, Any?> {
         return mapOf(
-            "userId" to userId,
+            "authId" to authId,
             "userName" to userName,
-            "email" to email
+            "email" to email,
+            "chats" to chats
         )
     }
 }
 
 data class Chat(
-    var user1: String? = "",
-    var user2: String? = "",
+    var users: MutableMap<String?, Boolean> = mutableMapOf(),
     var lastMessage: String? = "",
     var timeLastMessageSent: String? = ""
 ) {
     fun toMap(): Map<String, Any?> {
         return mapOf(
-            "user1" to user1,
-            "user2" to user2,
+            "users" to users,
             "lastMessage" to lastMessage,
             "timeLastMessageSent" to timeLastMessageSent
         )

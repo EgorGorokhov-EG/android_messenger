@@ -36,8 +36,9 @@ class ChatsListAdapter(options: FirebaseRecyclerOptions<Chat>):
         val chatLastMessage = view.findViewById<TextView>(R.id.chatLastMessage)
         val chatTimeLastMessageSent = view.findViewById<TextView>(R.id.chatTimeLastMessageSent)
 
-        fun bindDialog(dialog: Chat) {
-            chatItemUsername.text = dialog.user1
+        fun bindDialog(chat: Chat) {
+            // TODO: Chnge that to display correct id
+            chatItemUsername.text = chat.users.keys.toString()
         }
     }
 
