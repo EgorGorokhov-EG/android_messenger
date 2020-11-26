@@ -9,18 +9,26 @@ import androidx.recyclerview.widget.RecyclerView
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import java.util.*
+import kotlin.collections.HashMap
 
 class ChatActivity : MenuActivity() {
 
     private val database = Firebase.database.reference
     private val auth = Firebase.auth
 
-    private val currentUserId = auth.currentUser?.uid
-    private var currentUserName: String? = ""
     private var currentChatId: String? = ""
+
+    private var currentUserId: String? = ""
+    private var currentUserName: String? = ""
+
+    private var anotherUserId: String? = ""
+
 
     private lateinit var messagesListRV: RecyclerView
     private lateinit var adapter: FirebaseRecyclerAdapter<Message, MessageListAdapter.MessageViewHolder>
@@ -31,11 +39,15 @@ class ChatActivity : MenuActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
 
-        //currentUserName = getUserNameFromDB(currentUserId, database)
+        val intentExtras = intent.extras
+        currentUserName = intentExtras?.getString("currentUserId")
+        anotherUserId = intentExtras?.getString("anotherUserId")
+        currentChatId = intentExtras?.getString("chatId")
+
         messagesListRV = findViewById(R.id.messagesRecyclerView)
 
         // Retrieve messages query from DB
-        val messageQuery = database.child("messages").limitToLast(50)
+        val messageQuery = database.child("messages").child(currentChatId as String).limitToLast(50)
         val options = FirebaseRecyclerOptions.
                                             Builder<Message>().
                                             setQuery(messageQuery, Message::class.java).
@@ -46,6 +58,17 @@ class ChatActivity : MenuActivity() {
             stackFromEnd = true
         }
         messagesListRV.adapter = adapter
+
+        // Retrieve current userName frm the DB
+        val getUserNameQuery = database.child("users").orderByKey().equalTo(currentUserId)
+        getUserNameQuery.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val user = snapshot.value as HashMap<*,*>
+                currentUserName = user["userName"] as String?
+                println("User name: $currentUserName")
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        })
     }
 
     override fun onStart() {
@@ -56,7 +79,6 @@ class ChatActivity : MenuActivity() {
     override fun onStop() {
         super.onStop()
         adapter.stopListening()
-        //auth.signOut()
     }
 
     fun sendMessage(view: View) {
@@ -78,7 +100,7 @@ class ChatActivity : MenuActivity() {
             inputMessage.setText("")
 
             // Update messages in the DB
-            val key = database.child("messages").push().key
+            val key = database.child("messages").child(currentChatId as String).push().key
             database.updateChildren(mutableMapOf<String, Any>("/messages/$key" to message))
         }
     }

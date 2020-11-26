@@ -1,5 +1,7 @@
 package com.eg.messenger
 
+import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NO_HISTORY
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -38,18 +40,6 @@ class DisplayChatsActivity : MenuActivity() {
             }
             override fun onCancelled(error: DatabaseError) {}
         })
-
-        /*// Retrieve current userName frm the DB
-        println("Before username: $currentUserName")
-        val getUserNameQuery = database.child("users").orderByKey().equalTo(currentUserId)
-        getUserNameQuery.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val user = snapshot.children.toList()
-                println("User: $user")
-            }
-            override fun onCancelled(error: DatabaseError) {}
-        })*/
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,11 +59,11 @@ class DisplayChatsActivity : MenuActivity() {
 
         addNewChatFAB = findViewById(R.id.addNewChatBtn)
         addNewChatFAB.setOnClickListener {
-            val chatId = database.child("chats").push().key
-
-            println(currentUserId.toString() + " before chat")
-            val newChat = Chat(mutableMapOf(currentUserId as String to true, "testUser2" to true)).toMap()
-            database.updateChildren(mutableMapOf<String, Any>("/chats/$chatId" to newChat))
+            val intent = Intent(this, CreateNewChatActivity::class.java).apply {
+                flags = FLAG_ACTIVITY_NO_HISTORY
+                putExtra("currentUserId", currentUserId)
+            }
+            startActivity(intent)
         }
     }
 

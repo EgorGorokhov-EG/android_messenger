@@ -52,7 +52,7 @@ class AuthenticationActivity : AppCompatActivity() {
                     val userId = database.child("users").push().key
                     val authId = auth.currentUser?.uid
 
-                    val newUser = User(authId, userName = email, email = email)
+                    val newUser = User(userId, authId, userName = email, email = email)
                     database.updateChildren(mutableMapOf<String, Any?>("/users/$userId" to newUser.toMap()))
 
                     val intent = Intent(this, DisplayChatsActivity::class.java)

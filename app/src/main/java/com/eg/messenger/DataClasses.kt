@@ -17,6 +17,7 @@ data class Message(
 }
 
 data class User(
+    var id: String? = "",
     var authId: String? = "",
     var userName: String? = "",
     var email: String? = "",
@@ -24,6 +25,7 @@ data class User(
 ) {
     fun toMap(): Map<String, Any?> {
         return mapOf(
+            id as String to true,
             "authId" to authId,
             "userName" to userName,
             "email" to email,
