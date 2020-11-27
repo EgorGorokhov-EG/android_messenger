@@ -22,7 +22,7 @@ import kotlinx.android.synthetic.main.activity_chat.view.*
 const val MSG_TYPE_SENT = 0
 const val MSG_TYPE_RECEIVED = 1
 
-class MessageListAdapter(options: FirebaseRecyclerOptions<Message>):
+class MessageListAdapter(private val options: FirebaseRecyclerOptions<Message>, private val currentUserId: String?):
     FirebaseRecyclerAdapter<Message, MessageListAdapter.MessageViewHolder>(options){
 
     private lateinit var parentRV: RecyclerView
@@ -41,9 +41,8 @@ class MessageListAdapter(options: FirebaseRecyclerOptions<Message>):
     }
 
     override fun getItemViewType(position: Int): Int {
-       /* return if (options.snapshots[position].authId == auth.currentUser?.uid) MSG_TYPE_SENT
-            else  MSG_TYPE_RECEIVED*/
-        return MSG_TYPE_RECEIVED
+       return if (options.snapshots[position].userId == currentUserId) MSG_TYPE_SENT
+            else  MSG_TYPE_RECEIVED
     }
 
     // Bind data from Message to view holder to display it in the layout

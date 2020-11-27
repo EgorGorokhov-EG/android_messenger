@@ -59,6 +59,7 @@ class DisplayChatsActivity : MenuActivity() {
 
         addNewChatFAB = findViewById(R.id.addNewChatBtn)
         addNewChatFAB.setOnClickListener {
+            println(currentUserId)
             val intent = Intent(this, CreateNewChatActivity::class.java).apply {
                 flags = FLAG_ACTIVITY_NO_HISTORY
                 putExtra("currentUserId", currentUserId)

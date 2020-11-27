@@ -21,7 +21,7 @@ data class User(
     var authId: String? = "",
     var userName: String? = "",
     var email: String? = "",
-    var chats: List<String?> = listOf()
+    var chats: HashMap<String?, Boolean> = hashMapOf()
 ) {
     fun toMap(): Map<String, Any?> {
         return mapOf(

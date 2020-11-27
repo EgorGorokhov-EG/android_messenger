@@ -29,7 +29,6 @@ class ChatActivity : MenuActivity() {
 
     private var anotherUserId: String? = ""
 
-
     private lateinit var messagesListRV: RecyclerView
     private lateinit var adapter: FirebaseRecyclerAdapter<Message, MessageListAdapter.MessageViewHolder>
 
@@ -39,8 +38,9 @@ class ChatActivity : MenuActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
 
+        // Get chat's info from Intent
         val intentExtras = intent.extras
-        currentUserName = intentExtras?.getString("currentUserId")
+        currentUserId = intentExtras?.getString("currentUserId")
         anotherUserId = intentExtras?.getString("anotherUserId")
         currentChatId = intentExtras?.getString("chatId")
 
@@ -53,22 +53,11 @@ class ChatActivity : MenuActivity() {
                                             setQuery(messageQuery, Message::class.java).
                                             build()
 
-        adapter = MessageListAdapter(options)
+        adapter = MessageListAdapter(options, currentUserId)
         messagesListRV.layoutManager = LinearLayoutManager(this).apply {
             stackFromEnd = true
         }
         messagesListRV.adapter = adapter
-
-        // Retrieve current userName frm the DB
-        val getUserNameQuery = database.child("users").orderByKey().equalTo(currentUserId)
-        getUserNameQuery.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val user = snapshot.value as HashMap<*,*>
-                currentUserName = user["userName"] as String?
-                println("User name: $currentUserName")
-            }
-            override fun onCancelled(error: DatabaseError) {}
-        })
     }
 
     override fun onStart() {
@@ -101,7 +90,7 @@ class ChatActivity : MenuActivity() {
 
             // Update messages in the DB
             val key = database.child("messages").child(currentChatId as String).push().key
-            database.updateChildren(mutableMapOf<String, Any>("/messages/$key" to message))
+            database.updateChildren(mutableMapOf<String, Any>("/messages/$currentChatId/$key" to message))
         }
     }
 }
