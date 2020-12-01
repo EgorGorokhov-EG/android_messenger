@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.eg.messenger.data.Chat
+import com.eg.messenger.data.User
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.auth.ktx.auth
@@ -14,6 +15,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 class ChatsListAdapter(
@@ -22,7 +24,7 @@ class ChatsListAdapter(
     FirestoreRecyclerAdapter<Chat, ChatsListAdapter.ChatViewHolder>(options) {
 
     private val authId = Firebase.auth.currentUser?.uid
-    private val database = Firebase.database.reference
+    val db = Firebase.firestore
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -37,7 +39,11 @@ class ChatsListAdapter(
         position: Int,
         model: Chat
     ) {
-        holder.bindChat(model, authId)
+        val anotherUserId = model.users.filterNot { it == authId }[0].toString()
+        db.document("users/$anotherUserId").get().addOnSuccessListener {
+            val recipientUsername = it.toObject(User::class.java)?.userName
+            holder.bindChat(model, recipientUsername)
+        }
 
         holder.itemView.setOnClickListener(View.OnClickListener {
             openChat(model)
@@ -49,8 +55,10 @@ class ChatsListAdapter(
         private val chatLastMessage = view.findViewById<TextView>(R.id.chatLastMessage)
         private val chatTimeLastMessageSent = view.findViewById<TextView>(R.id.chatTimeLastMessageSent)
 
-        fun bindChat(model: Chat, authId: String?) {
-            chatItemUsername.text = model.users.filterNot { it == authId }[0].toString()
+        fun bindChat(model: Chat, recipientUsername: String?) {
+            chatItemUsername.text = recipientUsername
+            chatLastMessage.text = model.lastMessage[0]["messageBody"] as String
+            chatTimeLastMessageSent.text = model.lastMessage[0]["createdAt"] as String
         }
     }
 }

@@ -10,6 +10,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import java.util.*
@@ -39,12 +40,11 @@ class ChatActivity : MenuActivity() {
         currentUserId = extras?.getString("currentUserId")
         anotherUserId = extras?.getString("anotherUserId")
         currentChatId = extras?.getString("currentChatId")
-        println("current user: $currentUserId, another suer: $anotherUserId, chatId: $currentChatId")
 
         messagesListRV = findViewById(R.id.messagesRecyclerView)
 
         // Retrieve messages query from DB
-        val messageQuery = db.collection("chats").document(currentChatId as String).collection("messages")
+        val messageQuery = db.collection("chats").document(currentChatId as String).collection("messages").orderBy("timestamp").limit(50)
         val options = FirestoreRecyclerOptions.
                                             Builder<Message>().
                                             setQuery(messageQuery, Message::class.java).
@@ -65,6 +65,18 @@ class ChatActivity : MenuActivity() {
     override fun onStop() {
         super.onStop()
         adapter.stopListening()
+
+        // Update last message in this chat
+        val chatRef = db.collection("chats").document(currentChatId as String)
+
+        println("OnStop!")
+        chatRef.collection("messages")
+            .orderBy("timestamp")
+            .limitToLast(1)
+            .get().addOnSuccessListener {
+                println("success!")
+                chatRef.update("lastMessage", it.toObjects(Message::class.java))
+            }
     }
 
     fun sendMessage(view: View) {
@@ -85,8 +97,10 @@ class ChatActivity : MenuActivity() {
             // Clear input text field
             inputMessage.setText("")
 
-            // Update messages in the DB
-            db.collection("chats").document(currentChatId as String).collection("messages").add(message)
+            // Update this chat messages in the DB
+            db.collection("chats").document(currentChatId as String).collection("messages").add(message).addOnSuccessListener {
+                it.update(hashMapOf<String, Any>("timestamp" to FieldValue.serverTimestamp()))
+            }
         }
     }
 }

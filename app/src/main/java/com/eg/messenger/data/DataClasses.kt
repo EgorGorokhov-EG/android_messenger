@@ -1,10 +1,16 @@
 package com.eg.messenger.data
 
+import com.google.firebase.firestore.ServerTimestamp
+import java.util.*
+import kotlin.collections.HashMap
+
 data class Message(
     var userId: String? = "",
     var userName: String? = "",
     var createdAt: String? = "00:00",
     var messageBody: String? = "",
+    @ServerTimestamp
+    val timestamp: Date? = null
 ) {
     fun toMap(): Map<String, Any?> {
         return mapOf(
@@ -35,15 +41,13 @@ data class User(
 data class Chat(
     var chatId: String? = "",
     var users: List<String?> = listOf(),
-    var lastMessage: String? = "",
-    var timeLastMessageSent: String? = ""
+    var lastMessage: List<HashMap<String, Any>> = listOf()
 ) {
     fun toMap(): Map<String, Any?> {
         return mapOf(
             chatId as String to true,
             "users" to users,
-            "lastMessage" to lastMessage,
-            "timeLastMessageSent" to timeLastMessageSent
+            "lastMessage" to lastMessage
         )
     }
 }

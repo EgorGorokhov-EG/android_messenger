@@ -29,7 +29,6 @@ class AuthenticationActivity : AppCompatActivity() {
                 startActivity(it)
             }
         }
-        auth.signOut()
     }
 
     fun signInUser(view: View) {
@@ -52,10 +51,11 @@ class AuthenticationActivity : AppCompatActivity() {
             task ->
                 if (task.isSuccessful) {
                     val authId = auth.currentUser?.uid as String
-                    val newUser = User(authId, userName = email, email = email)
+                    val autoCreatedUsername = email.split("@")[0]
+                    val newUser = User(authId, userName = autoCreatedUsername, email = email)
 
                     db.collection("users").document(authId).set(newUser).addOnSuccessListener {
-                        val intent = Intent(this, DisplayChatsActivity::class.java).also {
+                        Intent(this, DisplayChatsActivity::class.java).also {
                             startActivity(it)
                         }
                     }
