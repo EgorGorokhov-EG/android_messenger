@@ -27,9 +27,9 @@ class CreateNewChatActivity : AppCompatActivity() {
         setContentView(R.layout.activity_create_new_chat)
 
         currentUserId = intent.extras?.getString("currentUserId")
-        println("userId from create new chat: $currentUserId")
         usersRV = findViewById(R.id.anotherUsersRV)
 
+        println("userId from create new chat: $currentUserId")
         val usersQuery = db.collection("users").whereNotEqualTo("userId", currentUserId)
         val options = FirestoreRecyclerOptions.Builder<User>().setQuery(usersQuery, User::class.java).build()
 
@@ -51,9 +51,9 @@ class CreateNewChatActivity : AppCompatActivity() {
             db.collection("chats").document(chatId).set(newChat)
 
             val intent = Intent(this, ChatActivity::class.java).apply {
-                putExtra("chatId", chatId)
                 putExtra("currentUserId", currentUserId)
                 putExtra("anotherUserId", anotherUserId)
+                putExtra("currentChatId", chatId)
             }
             startActivity(intent)
         }

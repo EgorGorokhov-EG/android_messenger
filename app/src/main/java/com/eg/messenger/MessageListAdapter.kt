@@ -14,11 +14,11 @@ import com.google.firebase.ktx.Firebase
 const val MSG_TYPE_SENT = 0
 const val MSG_TYPE_RECEIVED = 1
 
-class MessageListAdapter(private val options: FirestoreRecyclerOptions<Message>, private val currentUserId: String?):
+class MessageListAdapter(private val options: FirestoreRecyclerOptions<Message>,
+                         private val currentUserId: String?):
     FirestoreRecyclerAdapter<Message, MessageListAdapter.MessageViewHolder>(options){
 
     private lateinit var parentRV: RecyclerView
-    private val auth = Firebase.auth
 
     // Inflate view holder with specified layout
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {

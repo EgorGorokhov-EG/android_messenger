@@ -38,6 +38,8 @@ class ChatActivity : MenuActivity() {
         val extras = intent.extras
         currentUserId = extras?.getString("currentUserId")
         anotherUserId = extras?.getString("anotherUserId")
+        currentChatId = extras?.getString("currentChatId")
+        println("current user: $currentUserId, another suer: $anotherUserId, chatId: $currentChatId")
 
         messagesListRV = findViewById(R.id.messagesRecyclerView)
 

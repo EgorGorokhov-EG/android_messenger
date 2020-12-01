@@ -25,7 +25,7 @@ class AuthenticationActivity : AppCompatActivity() {
         auth = Firebase.auth
 
         if (auth.currentUser != null) {
-            val intent = Intent(this, DisplayChatsActivity::class.java).also {
+            Intent(this, DisplayChatsActivity::class.java).also {
                 startActivity(it)
             }
         }

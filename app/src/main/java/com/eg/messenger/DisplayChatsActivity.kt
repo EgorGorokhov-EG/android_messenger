@@ -36,10 +36,12 @@ class DisplayChatsActivity : MenuActivity() {
 
         val openChat = {chat: Chat ->
             val anotherUserId = chat.users.filterNot { it == currentAuthId }[0]
+            val chatId = chat.chatId
 
             val intent = Intent(this, ChatActivity::class.java).apply {
                 putExtra("currentUserId", currentAuthId)
                 putExtra("anotherUserId", anotherUserId)
+                putExtra("currentChatId", chatId)
             }
             startActivity(intent)
         }
@@ -50,7 +52,6 @@ class DisplayChatsActivity : MenuActivity() {
             layoutManager = LinearLayoutManager(this.context)
             adapter = chatsAdapter
         }
-
 
        // Handle creation of a new Chat via FAB
         val addNewChatFAB: FloatingActionButton = findViewById(R.id.addNewChatBtn)
