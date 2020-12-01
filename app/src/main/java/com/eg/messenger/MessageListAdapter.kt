@@ -3,27 +3,19 @@ package com.eg.messenger
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.TextView
-import androidx.core.view.get
 import androidx.recyclerview.widget.RecyclerView
-import com.firebase.ui.database.FirebaseRecyclerAdapter
-import com.firebase.ui.database.FirebaseRecyclerOptions
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.FirebaseAuthKtxRegistrar
+import com.eg.messenger.data.Message
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import kotlinx.android.synthetic.main.activity_chat.view.*
 
 const val MSG_TYPE_SENT = 0
 const val MSG_TYPE_RECEIVED = 1
 
-class MessageListAdapter(private val options: FirebaseRecyclerOptions<Message>, private val currentUserId: String?):
-    FirebaseRecyclerAdapter<Message, MessageListAdapter.MessageViewHolder>(options){
+class MessageListAdapter(private val options: FirestoreRecyclerOptions<Message>, private val currentUserId: String?):
+    FirestoreRecyclerAdapter<Message, MessageListAdapter.MessageViewHolder>(options){
 
     private lateinit var parentRV: RecyclerView
     private val auth = Firebase.auth

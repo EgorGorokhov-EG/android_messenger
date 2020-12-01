@@ -3,24 +3,21 @@ package com.eg.messenger
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.firebase.ui.database.FirebaseRecyclerAdapter
-import com.firebase.ui.database.FirebaseRecyclerOptions
+import com.eg.messenger.data.Message
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import java.util.*
-import kotlin.collections.HashMap
 
 class ChatActivity : MenuActivity() {
 
-    private val database = Firebase.database.reference
-    private val auth = Firebase.auth
+    private val db = Firebase.firestore
+    //private val auth = Firebase.auth
 
     private var currentChatId: String? = ""
 
@@ -30,7 +27,7 @@ class ChatActivity : MenuActivity() {
     private var anotherUserId: String? = ""
 
     private lateinit var messagesListRV: RecyclerView
-    private lateinit var adapter: FirebaseRecyclerAdapter<Message, MessageListAdapter.MessageViewHolder>
+    private lateinit var adapter: FirestoreRecyclerAdapter<Message, MessageListAdapter.MessageViewHolder>
 
     private val localCalendar = Calendar.getInstance()
 
@@ -38,17 +35,15 @@ class ChatActivity : MenuActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
 
-        // Get chat's info from Intent
-        val intentExtras = intent.extras
-        currentUserId = intentExtras?.getString("currentUserId")
-        anotherUserId = intentExtras?.getString("anotherUserId")
-        currentChatId = intentExtras?.getString("chatId")
+        val extras = intent.extras
+        currentUserId = extras?.getString("currentUserId")
+        anotherUserId = extras?.getString("anotherUserId")
 
         messagesListRV = findViewById(R.id.messagesRecyclerView)
 
         // Retrieve messages query from DB
-        val messageQuery = database.child("messages").child(currentChatId as String).limitToLast(50)
-        val options = FirebaseRecyclerOptions.
+        val messageQuery = db.collection("chats").document(currentChatId as String).collection("messages")
+        val options = FirestoreRecyclerOptions.
                                             Builder<Message>().
                                             setQuery(messageQuery, Message::class.java).
                                             build()
@@ -83,14 +78,13 @@ class ChatActivity : MenuActivity() {
                 userId = currentUserId,
                 userName = currentUserName,
                 createdAt = "$createdAtHour:$createdAtMinutes $timeAmPm"
-            ).toMap()
+            )
 
             // Clear input text field
             inputMessage.setText("")
 
             // Update messages in the DB
-            val key = database.child("messages").child(currentChatId as String).push().key
-            database.updateChildren(mutableMapOf<String, Any>("/messages/$currentChatId/$key" to message))
+            db.collection("chats").document(currentChatId as String).collection("messages").add(message)
         }
     }
 }

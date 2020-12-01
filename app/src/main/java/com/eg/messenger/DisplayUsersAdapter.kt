@@ -5,21 +5,24 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.firebase.ui.database.FirebaseRecyclerAdapter
-import com.firebase.ui.database.FirebaseRecyclerOptions
+import com.eg.messenger.data.User
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
 
-class DisplayUsersAdapter(options: FirebaseRecyclerOptions<User>, val listener: (User) -> Unit):
-FirebaseRecyclerAdapter<User, DisplayUsersAdapter.UserViewHolder>(options) {
+class DisplayUsersAdapter(options: FirestoreRecyclerOptions<User>,
+                          private val listener: (User) -> Unit):
+FirestoreRecyclerAdapter<User, DisplayUsersAdapter.UserViewHolder>(options) {
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): DisplayUsersAdapter.UserViewHolder {
+    ): UserViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.user_item_layout, parent, false)
         return UserViewHolder(view)
     }
 
     override fun onBindViewHolder(
-        holder: DisplayUsersAdapter.UserViewHolder,
+        holder: UserViewHolder,
         position: Int,
         model: User
     ) {

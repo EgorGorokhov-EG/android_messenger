@@ -2,67 +2,62 @@ package com.eg.messenger
 
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NO_HISTORY
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.Menu
-import android.view.View
+import androidx.activity.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.firebase.ui.database.FirebaseRecyclerOptions
+import com.eg.messenger.data.Chat
+import com.eg.messenger.ui.UserViewModel
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.database
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import kotlin.random.Random
 
 class DisplayChatsActivity : MenuActivity() {
-    private lateinit var addNewChatFAB: FloatingActionButton
 
-    private val database = Firebase.database.reference
+    private val db = Firebase.firestore
+
     private val auth = Firebase.auth
     private val currentAuthId = auth.currentUser?.uid
 
+    private val userModel: UserViewModel by viewModels()
+
     private lateinit var chatsAdapter: ChatsListAdapter
-
-    private var currentUserId: String? = ""
-    private var currentUserName: String? = ""
-
-    init {
-        // Retrieve current userID from the DB
-        val getUserIdQuery = database.child("users").orderByChild("authId").equalTo(currentAuthId)
-        getUserIdQuery.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val snapValue = snapshot.value
-                currentUserId = (snapValue as HashMap<*,*>).keys.toList()[0] as String?
-            }
-            override fun onCancelled(error: DatabaseError) {}
-        })
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_display_chats)
 
-        val chatsQuery = database.child("chats")
-        val options = FirebaseRecyclerOptions.Builder<Chat>().setQuery(chatsQuery, Chat::class.java).build()
-
         val chatsRV = findViewById<RecyclerView>(R.id.chatsRecyclerView)
-        chatsAdapter = ChatsListAdapter(options)
 
+        val chatsQuery = db.collection("chats")
+        val options = FirestoreRecyclerOptions.Builder<Chat>().setQuery(chatsQuery, Chat::class.java).build()
+
+        val openChat = {chat: Chat ->
+            val anotherUserId = chat.users.filterNot { it == currentAuthId }[0]
+
+            val intent = Intent(this, ChatActivity::class.java).apply {
+                putExtra("currentUserId", currentAuthId)
+                putExtra("anotherUserId", anotherUserId)
+            }
+            startActivity(intent)
+        }
+
+
+        chatsAdapter = ChatsListAdapter(options, openChat)
         chatsRV.apply {
             layoutManager = LinearLayoutManager(this.context)
             adapter = chatsAdapter
         }
 
-        addNewChatFAB = findViewById(R.id.addNewChatBtn)
+
+       // Handle creation of a new Chat via FAB
+        val addNewChatFAB: FloatingActionButton = findViewById(R.id.addNewChatBtn)
         addNewChatFAB.setOnClickListener {
-            println(currentUserId)
             val intent = Intent(this, CreateNewChatActivity::class.java).apply {
                 flags = FLAG_ACTIVITY_NO_HISTORY
-                putExtra("currentUserId", currentUserId)
+                putExtra("currentUserId", currentAuthId)
             }
             startActivity(intent)
         }

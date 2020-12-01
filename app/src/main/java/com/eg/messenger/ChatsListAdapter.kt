@@ -5,15 +5,24 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.firebase.ui.database.FirebaseRecyclerAdapter
-import com.firebase.ui.database.FirebaseRecyclerOptions
+import com.eg.messenger.data.Chat
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
-class ChatsListAdapter(options: FirebaseRecyclerOptions<Chat>):
-    FirebaseRecyclerAdapter<Chat, ChatsListAdapter.ChatViewHolder>(options) {
+class ChatsListAdapter(
+    options: FirestoreRecyclerOptions<Chat>,
+    private val openChat: (Chat) -> Unit):
+    FirestoreRecyclerAdapter<Chat, ChatsListAdapter.ChatViewHolder>(options) {
 
-    val auth = Firebase.auth
+    private val authId = Firebase.auth.currentUser?.uid
+    private val database = Firebase.database.reference
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -28,18 +37,20 @@ class ChatsListAdapter(options: FirebaseRecyclerOptions<Chat>):
         position: Int,
         model: Chat
     ) {
-        holder.bindDialog(model)
+        holder.bindChat(model, authId)
+
+        holder.itemView.setOnClickListener(View.OnClickListener {
+            openChat(model)
+        })
     }
 
     class ChatViewHolder(view: View): RecyclerView.ViewHolder(view) {
         private val chatItemUsername = view.findViewById<TextView>(R.id.chatUserName)
-        val chatLastMessage = view.findViewById<TextView>(R.id.chatLastMessage)
-        val chatTimeLastMessageSent = view.findViewById<TextView>(R.id.chatTimeLastMessageSent)
+        private val chatLastMessage = view.findViewById<TextView>(R.id.chatLastMessage)
+        private val chatTimeLastMessageSent = view.findViewById<TextView>(R.id.chatTimeLastMessageSent)
 
-        fun bindDialog(chat: Chat) {
-            // TODO: Chnge that to display correct id
-            chatItemUsername.text = chat.users.keys.toString()
+        fun bindChat(model: Chat, authId: String?) {
+            chatItemUsername.text = model.users.filterNot { it == authId }[0].toString()
         }
     }
-
 }

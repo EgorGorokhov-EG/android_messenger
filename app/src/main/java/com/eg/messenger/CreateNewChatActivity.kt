@@ -5,15 +5,16 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.firebase.ui.database.FirebaseRecyclerOptions
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.database
+import com.eg.messenger.data.Chat
+import com.eg.messenger.data.User
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 class CreateNewChatActivity : AppCompatActivity() {
-    private val database = Firebase.database.reference
+
+    private val db = Firebase.firestore
 
     private lateinit var usersRV: RecyclerView
     private lateinit var usersAdapter: DisplayUsersAdapter
@@ -26,45 +27,35 @@ class CreateNewChatActivity : AppCompatActivity() {
         setContentView(R.layout.activity_create_new_chat)
 
         currentUserId = intent.extras?.getString("currentUserId")
+        println("userId from create new chat: $currentUserId")
         usersRV = findViewById(R.id.anotherUsersRV)
 
-        val usersQuery = database.child("users").orderByChild(currentUserId as String).equalTo(null)
-        val options = FirebaseRecyclerOptions.Builder<User>().setQuery(usersQuery, User::class.java).build()
-        val context = this
+        val usersQuery = db.collection("users").whereNotEqualTo("userId", currentUserId)
+        val options = FirestoreRecyclerOptions.Builder<User>().setQuery(usersQuery, User::class.java).build()
 
         val listener = {user: User ->
             // On click create new chat with current user and chosen one
             // Also update these users
             // And then start ChatActivity
 
-            // Retrieve current userID from the DB
-            val getUserIdQuery = database.child("users").orderByChild("authId").equalTo(user.authId)
-            getUserIdQuery.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val snapValue = snapshot.value
-                    anotherUserId = (snapValue as HashMap<*,*>).keys.toList()[0] as String?
+            anotherUserId = user.userId
+            val chatId = currentUserId + anotherUserId
+            val newChat = Chat(chatId, listOf(currentUserId, anotherUserId))
 
-                    val chatId = database.child("chats").push().key
+            // Update user's info in the DB
+            val databaseUsers = db.collection("users")
+            databaseUsers.document(currentUserId as String).update("chats", FieldValue.arrayUnion(chatId))
+            databaseUsers.document(anotherUserId as String).update("chats", FieldValue.arrayUnion(chatId))
 
-                    // Update user's info in the DB
-                    val databaseUsers = database.child("users")
-                    databaseUsers.child(currentUserId as String).child("chats").child(chatId as String).setValue(true)
-                    databaseUsers.child(anotherUserId as String).child("chats").child(chatId as String).setValue(true)
+            // Create new chat in the DB
+            db.collection("chats").document(chatId).set(newChat)
 
-                    // Create new chat in the DB
-                    val newChat = Chat(mutableMapOf(currentUserId to true, anotherUserId to true)).toMap()
-                    database.updateChildren(mutableMapOf<String, Any>("/chats/$chatId" to newChat))
-
-                    val intent = Intent(context, ChatActivity::class.java).apply {
-                        putExtra("chatId", chatId)
-                        putExtra("currentUserId", currentUserId)
-                        putExtra("anotherUserId", anotherUserId)
-                    }
-                    startActivity(intent)
-
-                }
-                override fun onCancelled(error: DatabaseError) {}
-            })
+            val intent = Intent(this, ChatActivity::class.java).apply {
+                putExtra("chatId", chatId)
+                putExtra("currentUserId", currentUserId)
+                putExtra("anotherUserId", anotherUserId)
+            }
+            startActivity(intent)
         }
 
         usersAdapter = DisplayUsersAdapter(options, listener)

@@ -1,4 +1,4 @@
-package com.eg.messenger
+package com.eg.messenger.data
 
 data class Message(
     var userId: String? = "",
@@ -17,16 +17,14 @@ data class Message(
 }
 
 data class User(
-    var id: String? = "",
-    var authId: String? = "",
+    var userId: String? = "",
     var userName: String? = "",
     var email: String? = "",
-    var chats: HashMap<String?, Boolean> = hashMapOf()
+    var chats: MutableList<String?> = mutableListOf()
 ) {
     fun toMap(): Map<String, Any?> {
         return mapOf(
-            id as String to true,
-            "authId" to authId,
+            userId as String to true,
             "userName" to userName,
             "email" to email,
             "chats" to chats
@@ -35,12 +33,14 @@ data class User(
 }
 
 data class Chat(
-    var users: MutableMap<String?, Boolean> = mutableMapOf(),
+    var chatId: String? = "",
+    var users: List<String?> = listOf(),
     var lastMessage: String? = "",
     var timeLastMessageSent: String? = ""
 ) {
     fun toMap(): Map<String, Any?> {
         return mapOf(
+            chatId as String to true,
             "users" to users,
             "lastMessage" to lastMessage,
             "timeLastMessageSent" to timeLastMessageSent
