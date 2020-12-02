@@ -13,7 +13,7 @@
         android:padding="8dp"
         android:maxWidth="@dimen/sizeMessageMaxWidth"
         android:text="Hello it's a me Mario!"
-        android:textColor="@color/colorOnPrimary"
+        android:textColor="@color/white"
         android:textSize="@dimen/sizeMessageText"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
