@@ -1,21 +1,29 @@
 package com.eg.messenger
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.eg.messenger.data.Message
+import com.eg.messenger.data.User
+import com.eg.messenger.notification.NotificationData
+import com.eg.messenger.notification.PushNotification
+import com.eg.messenger.notification.RetrofitInstance
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.ktx.database
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.gson.Gson
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.*
 
 class ChatActivity : MenuActivity() {
+    private val TAG = "ChatActivity"
 
     private val db = Firebase.firestore
     //private val auth = Firebase.auth
@@ -26,6 +34,8 @@ class ChatActivity : MenuActivity() {
     private var currentUserName: String? = ""
 
     private var anotherUserId: String? = ""
+    private var anotherUserMessagingToken: String? = ""
+    lateinit var anotherUser: User
 
     private lateinit var messagesListRV: RecyclerView
     private lateinit var adapter: FirestoreRecyclerAdapter<Message, MessageListAdapter.MessageViewHolder>
@@ -87,7 +97,7 @@ class ChatActivity : MenuActivity() {
             val createdAtMinutes = localCalendar.get(Calendar.MINUTE)
             val timeAmPm = if (localCalendar.get(Calendar.AM_PM) == 0) "AM" else "PM"
 
-            val message = Message(
+            val newMessage = Message(
                 messageBody = inputMessage.text.toString(),
                 userId = currentUserId,
                 userName = currentUserName,
@@ -97,10 +107,26 @@ class ChatActivity : MenuActivity() {
             // Clear input text field
             inputMessage.setText("")
 
+            // Send push notification to another user in chat
+            PushNotification(NotificationData(newMessage.userName, newMessage.messageBody), )
+
             // Update this chat messages in the DB
-            db.collection("chats").document(currentChatId as String).collection("messages").add(message).addOnSuccessListener {
+            db.collection("chats").document(currentChatId as String).collection("messages").add(newMessage).addOnSuccessListener {
                 it.update(hashMapOf<String, Any>("timestamp" to FieldValue.serverTimestamp()))
             }
+        }
+    }
+
+    private fun sendNotification(notification: PushNotification) = CoroutineScope(Dispatchers.IO).launch {
+        try {
+            val response = RetrofitInstance.api.postNotification(notification)
+            if (response.isSuccessful) {
+                Log.d(TAG, "Response: ${Gson().toJson(response)}")
+            } else {
+                Log.e(TAG, response.errorBody().toString())
+            }
+        } catch(e: Exception) {
+            Log.e(TAG, e.toString())
         }
     }
 }

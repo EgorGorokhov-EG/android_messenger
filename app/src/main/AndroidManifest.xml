@@ -3,6 +3,7 @@
     package="com.eg.messenger">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
     <application
         android:allowBackup="true"
@@ -11,7 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".CreateNewChatActivity"></activity>
+        <activity android:name=".CreateNewChatActivity" />
         <activity android:name=".MenuActivity" />
         <activity android:name=".DisplayChatsActivity" />
         <activity android:name=".ChatActivity" />
@@ -22,6 +23,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service
+            android:name=".notification.FirebaseMessaging"
+            android:exported="false"
+            android:permission="com.google.android.c2dm.permission.RECEIVE">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGIN_EVENT"/>
+
+                <action android:name="com.google.android.c2dm.permission.RECEIVE"/>
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>
