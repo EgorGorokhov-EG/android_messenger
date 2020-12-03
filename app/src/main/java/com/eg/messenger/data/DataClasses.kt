@@ -25,6 +25,7 @@ data class Message(
 data class User(
     var userId: String? = "",
     var userName: String? = "",
+    var messagingToken: String? = "",
     var email: String? = "",
     var chats: MutableList<String?> = mutableListOf()
 ) {

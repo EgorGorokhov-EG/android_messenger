@@ -7,7 +7,7 @@ import androidx.activity.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.eg.messenger.data.Chat
-import com.eg.messenger.ui.UserViewModel
+import com.eg.messenger.ui.ChatViewModel
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.ktx.auth
@@ -21,7 +21,7 @@ class DisplayChatsActivity : MenuActivity() {
     private val auth = Firebase.auth
     private val currentAuthId = auth.currentUser?.uid
 
-    private val userModel: UserViewModel by viewModels()
+    //private val chatModel: ChatViewModel by viewModels()
 
     private lateinit var chatsAdapter: ChatsListAdapter
 

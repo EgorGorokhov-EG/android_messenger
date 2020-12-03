@@ -9,5 +9,5 @@ data class NotificationData(
 // Data class used to send NotificationData to recipient via retrofit request to FCM
 data class PushNotification (
     val data: NotificationData,
-    val to: String
+    val to: String?
 )
